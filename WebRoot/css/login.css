@@ -1,0 +1,103 @@
+@CHARSET "UTF-8";
+body{
+	font-family:"Microsoft Yahei"
+}
+
+.main .left{
+	width:238px
+}
+
+.loginleft {
+	background:url(../images/loginpage/car.png);
+	margin-left:0
+}
+
+
+.loginbox{
+	margin-left:50px;
+	margin-right:0;
+	float:left;
+	position:relative;
+	width:395px;
+	margin-top:130px
+	}
+
+.loginbox h2{
+	position:absolute;
+	top:-55px;
+	left:206px;
+	font-weight:400
+	}
+
+.left,.middle,.login_right{
+	float:left
+	}
+
+.left input{
+	height:30px;
+	width:147px;
+	margin-bottom:10px;
+	padding-left:10px
+	}
+
+.left .sinp{
+	width:74px
+}
+
+.valcode{
+	margin-left:5px;
+	width:58px;
+	height:30px
+	}
+
+#lblccode{
+	vertical-align:top;
+	margin-left:6px
+}
+
+.btn{
+	background:#f27241;
+	display:block;
+	width:162px;
+	border-radius:5px;
+	height:38px;
+	border:none;
+	color:#fff;
+	font-size:14px
+	}
+
+.middle{
+	background:url(../images/loginpage/or.png);
+	height:170px;width:26px
+}
+
+.login_right{
+	height:200px;
+	width:80px;
+	margin-top:37px;
+	margin-left:33px
+	}
+
+.login_right a{
+	width:209px;
+	height:38px;
+	float:left;
+	line-height:38px;
+	text-align:center;
+	color:#fff;
+	margin-bottom:10px
+}
+
+.login_right .ljzc{
+	background:#6a84b5;
+	border-radius:6px;
+	width:72px
+}
+
+.login_right .qqdl{
+	background:#4dccf5;
+	border-radius:6px;
+	width:72px
+}
+
+.sinp{margin-top:-11px}

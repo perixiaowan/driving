@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context-2.5.xsd
+           http://www.springframework.org/schema/aop
+           http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+           http://www.springframework.org/schema/tx 
+           http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
+         
+    <!-- 定义自动扫描包内的component -->
+    <context:component-scan base-package="com.xinhua"/>
+    
+	<!-- 加载jdbc.properties属性文件 -->
+	<context:property-placeholder location="classpath:jdbc.properties"/>
+	
+
+	
+	<!-- 数据源与数据库连接池的配制 -->
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+	
+		<property name="driverClassName" value="${jdbc.driverClassName}"/>
+		
+		<property name="url" value="${jdbc.url}"/>
+		
+		<property name="username" value="${jdbc.username}"/>
+		
+		<property name="password" value="${jdbc.password}"/>
+		
+		<property name="maxActive" value="100"></property>
+		
+		<property name="maxIdle" value="30"></property>
+		
+		<property name="maxWait" value="500"></property>
+		
+		<property name="defaultAutoCommit" value="true"></property>
+			
+	</bean>
+	
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+	
+  		<property name="dataSource">
+			<ref local="dataSource"/>
+		</property>
+		
+		
+		
+		
+		<!-- Spring自动去包中检索实体类 -->
+		<property name="packagesToScan">
+		    <list>
+		        <value>com.xinhua.</value>
+		    </list>
+		</property>
+		
+		<property name="hibernateProperties">
+			<props>
+				<!-- 配置数据库方言 -->
+			    <prop key="hibernate.dialect">${jdbc.dialect}</prop>
+			    
+			    <!-- 将sql语句打印到控制台 -->
+			    <prop key="hibernate.show_sql">true</prop>
+			    
+			    <!-- 将打印到控制台的sql语句格式化 -->
+			    <prop key="hibernate.format_sql">false</prop>
+
+			    <!-- 自动生成数据库 -->
+			    <!-- <prop key="hibernate.hbm2ddl.auto">update</prop> -->
+			    
+			    <!-- 配置session上下文环境 -->
+				<prop key="current_session_context_class">thread</prop>
+			</props>
+		</property>
+		
+	</bean>
+	 
+	<bean id="himbernateTemplate" class="org.springframework.orm.hibernate3.HibernateTemplate">
+		<property name="sessionFactory" ref="sessionFactory"></property>  
+	</bean>
+
+	
+	<!--配置hibernate的事务管理-->
+	<bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory"/>
+	</bean>
+	
+	<!--配置基于注解的事务管理-->
+	<tx:annotation-driven transaction-manager="transactionManager"/>
+	
+	
+	
+	<!--配置异步线程执行器--> 
+	<bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor"> 
+		<!-- 设置核心池子的大小 --> 
+		<property name="corePoolSize" value="10" /> 
+		
+		<!-- 设置最大池子的大小  --> 
+	  	<property name="maxPoolSize" value="30" /> 
+	</bean>
+	
+	<bean name="transferJob" class="org.springframework.scheduling.quartz.JobDetailBean">  
+       <property name="jobClass" value="com.xinhua.manage.task.job.TaskJob" />   
+    </bean> 
+	
+    <!-- 定义触发时间 --> 
+    <bean id="doTime" class="org.springframework.scheduling.quartz.CronTriggerBean"> 
+        <property name="jobDetail"> 
+            <ref bean="transferJob"/> 
+        </property> 
+        <!-- cron表达式 --> 
+        <property name="cronExpression"> 
+			<value>0 0 23 * * ?</value>
+<!-- 			<value>0 0/1 * * * ?</value> -->
+        </property> 
+    </bean> 
+    
+    <bean id="startQuertz" autowire="no" class="org.springframework.scheduling.quartz.SchedulerFactoryBean"> 
+        <property name="triggers"> 
+            <list> 
+                <ref bean="doTime"/> 
+            </list> 
+        </property> 
+    </bean> 
+</beans>
